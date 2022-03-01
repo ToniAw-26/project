@@ -1,0 +1,206 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <!-- Required meta tags -->
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+  <title>Skydash Admin</title>
+  <!-- plugins:css -->
+  <link rel="stylesheet" href="/assets/vendors/feather/feather.css">
+  <link rel="stylesheet" href="/assets/vendors/ti-icons/css/themify-icons.css">
+  <link rel="stylesheet" href="/assets/vendors/css/vendor.bundle.base.css">
+  <!-- endinject -->
+  <!-- Plugin css for this page -->
+  <link rel="stylesheet" href="/assets/vendors/datatables.net-bs4/dataTables.bootstrap4.css">
+  <link rel="stylesheet" href="/assets/vendors/ti-icons/css/themify-icons.css">
+  <link rel="stylesheet" type="text/css" href="/assets/js/select.dataTables.min.css">
+  <!-- End plugin css for this page -->
+  <!-- inject:css -->
+  <link rel="stylesheet" href="/assets/css/vertical-layout-light/style.css">
+  <!-- endinject -->
+  <link rel="shortcut icon" href="/assets/images/favicon.png" />
+</head>
+<body>
+  <div class="container-scroller">
+    <!-- partial:partials/_navbar.html -->
+    <app-navbar></app-navbar>
+    <!-- partial -->
+    <div class="container-fluid page-body-wrapper">
+      <!-- partial:partials/_settings-panel.html -->
+      <!-- partial -->
+      <!-- partial:partials/_sidebar.html -->
+      <app-sidebar></app-sidebar>
+      <!-- partial -->
+      <div class="main-panel">
+        <div class="content-wrapper">
+
+          <div class="row">
+            <div class="col-12 grid-margin stretch-card">
+              <div class="card">
+                <div class="row" style="height: 100px;">
+                  <div class="col-md-12">
+                    <p style="font-size: 1.75rem;font-weight: normal;margin-top: 37px;margin-left: 30px;"><b>Acceuil > Signalement > Listes</b></p>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <div class="col-lg-12 grid-margin stretch-card">
+            <div class="card">
+              <div class="card-body">
+
+                <div class="search-div">
+                  <label class="label-form">Vue</label>
+                  <select class="form-control" (change)="onChange($event)" [ngModel]="value">
+                    <option  value="0">Tableau</option>
+                    <option  value="1">Carte</option>
+                  </select>
+                </div>
+
+              </div>
+            </div>
+          </div>
+
+          <div class="col-lg-12 grid-margin stretch-card" *ngIf="value == 0">
+            <div class="card">
+              <div class="card-body">
+
+                <div class="search-div">
+                  <input matInput class="form-control"  placeholder="Recherche" autocomplete="off" (keyup)="applyFilter($any($event.target).value)">
+                </div>
+
+
+                <div class="mat-elevation-z8">
+                  <table mat-table [dataSource]="dataSource" matSort  class="table table-dark table-stripe">
+
+                    <!-- ID Column -->
+                    <ng-container matColumnDef="ID">
+                      <th mat-header-cell *matHeaderCellDef mat-sort-header> ID </th>
+                      <td mat-cell *matCellDef="let row"> {{row.id_signalement}} </td>
+                    </ng-container>
+
+                    <!-- Région Column -->
+                    <ng-container matColumnDef="Régions">
+                      <th mat-header-cell *matHeaderCellDef mat-sort-header> Régions </th>
+                      <td mat-cell *matCellDef="let row"> {{row.region.region}} </td>
+                    </ng-container>
+
+                    <!-- Provinces Column -->
+                    <ng-container matColumnDef="User">
+                      <th mat-header-cell *matHeaderCellDef mat-sort-header> User </th>
+                      <td mat-cell *matCellDef="let row"> {{row.users.nom}} </td>
+                    </ng-container>
+
+                    <!-- Provinces Column -->
+                    <ng-container matColumnDef="Type">
+                      <th mat-header-cell *matHeaderCellDef mat-sort-header> Type Signalement </th>
+                      <td mat-cell *matCellDef="let row"> {{row.category.name}} </td>
+                    </ng-container>
+
+
+                    <!-- Provinces Column -->
+                    <ng-container matColumnDef="Status">
+                      <th mat-header-cell *matHeaderCellDef mat-sort-header> Status </th>
+                      <td mat-cell *matCellDef="let row">
+                        <span *ngIf="row.status == 0" class="badge bg-primary">En Attente</span>
+                        <span *ngIf="row.status == 1" class="badge bg-warning ">En Cours</span>
+                        <span *ngIf="row.status == 2" class="badge bg-success">Términer</span>
+                      </td>
+                    </ng-container>
+
+                    <!-- Provinces Column -->
+                    <ng-container matColumnDef="Actions">
+                      <th mat-header-cell *matHeaderCellDef mat-sort-header> Actions </th>
+                      <td mat-cell *matCellDef="let row">
+                        <section>
+                          <div class="example-button-row">
+                            <div class="example-flex-container">
+                              <div class="example-button-container">
+
+
+                                <a routerLink="/signalement/detail/{{row.id_signalement}}">
+                                  <button mat-fab color="danger" aria-label="Example icon button with a delete icon">
+                                    <mat-icon style="color:rgb(37, 16, 151);">remove_red_eye</mat-icon>
+                                  </button>
+                                </a>
+                              </div>
+                            </div>
+                          </div>
+                        </section>
+                      </td>
+                    </ng-container>
+
+
+                    <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
+                    <tr mat-row *matRowDef="let row; columns: displayedColumns;"></tr>
+                  </table>
+
+                  <mat-paginator [pageSizeOptions]="[5, 10, 25, 100]" aria-label="Select page of users"></mat-paginator>
+                </div>
+
+              </div>
+            </div>
+          </div>
+
+
+          <div class="col-lg-12 grid-margin stretch-card" *ngIf="value == 1">
+            <div class="card">
+                <ejs-maps id='rn-container' [zoomSettings]="zoomSettings" (markerClick)="markerClicked($event)">
+                  <e-layers>
+                    <e-layer [layerType] = 'layerType'  [markerSettings]='markerSettings' [tooltipSettings]='tooltipSettings'></e-layer>
+                 </e-layers>
+                </ejs-maps>
+            </div>
+          </div>
+
+
+
+
+
+
+
+
+        </div>
+        <!-- content-wrapper ends -->
+        <!-- partial:partials/_footer.html -->
+        <footer class="footer">
+          <div class="d-sm-flex justify-content-center justify-content-sm-between">
+            <span class="text-muted text-center text-sm-left d-block d-sm-inline-block">Copyright © 2021. All rights reserved.</span>
+            <span class="float-none float-sm-right d-block mt-1 mt-sm-0 text-center"> <i class="ti-heart text-danger ml-1"></i></span>
+          </div>
+        </footer>
+        <!-- partial -->
+      </div>
+      <!-- main-panel ends -->
+    </div>
+    <!-- page-body-wrapper ends -->
+  </div>
+  <!-- container-scroller -->
+
+  <!-- plugins:js -->
+  <script src="/assets/vendors/js/vendor.bundle.base.js"></script>
+  <!-- endinject -->
+  <!-- Plugin js for this page -->
+  <script src="/assets/vendors/chart.js/Chart.min.js"></script>
+  <script src="/assets/vendors/datatables.net/jquery.dataTables.js"></script>
+  <script src="/assets/vendors/datatables.net-bs4/dataTables.bootstrap4.js"></script>
+  <script src="/assets/js/dataTables.select.min.js"></script>
+
+  <!-- End plugin js for this page -->
+  <!-- inject:js -->
+  <script src="/assets/js/off-canvas.js"></script>
+  <script src="/assets/js/hoverable-collapse.js"></script>
+  <script src="/assets/js/template.js"></script>
+  <script src="/assets/js/settings.js"></script>
+  <script src="/assets/js/todolist.js"></script>
+  <!-- endinject -->
+  <!-- Custom js for this page-->
+  <script src="/assets/js/dashboard.js"></script>
+  <script src="/assets/js/Chart.roundedBarCharts.js"></script>
+  <!-- End custom js for this page-->
+</body>
+
+</html>
+
